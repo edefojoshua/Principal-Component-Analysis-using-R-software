@@ -1,0 +1,85 @@
+---
+title: "Principal Component Analysis using R"
+author: "Joshua Edefo"
+date: "2024-07-27"
+email: "edefojoshua2000@yahoo.com"
+output: github_document
+---
+library
+
+```{r a, message = FALSE}
+library(ggplot2)
+```
+Load the iris dataset
+
+```{r b}
+data(iris)
+head(iris)
+str(iris)
+summary (iris)
+```
+Exclude the species column as it's a categorical variable
+
+```{r c}
+iris_data <- iris[, 1:4] # or iris_data <- iris[, -5] or iris_data <- iris (~Sepal.Length + Sepal.Length + Petal.Length + Petal.Width, data = iris )
+iris_data
+```
+
+Standardised the scale
+```{r d}
+iris_scaled <- scale(iris_data)
+```
+
+Perform PCA, &  view eigen values and vectors
+```{r e}
+pca_result <- prcomp(iris_scaled, center = TRUE, scale. = TRUE)
+pca_result
+```
+plot showing the variance $ visualize the explained variance (scree plot)
+
+```{r g}
+plot(pca_result, type = "l")
+scree_plot <- qplot(1:length(pca_result$sdev), 
+                    (pca_result$sdev)^2 / sum((pca_result$sdev)^2), 
+                    geom = "line") +
+  geom_point() +
+  labs(x = "Principal Component", 
+       y = "Proportion of Variance Explained",
+       title = "Scree Plot")
+print(scree_plot)
+```
+
+Visualize the PCA results (biplot), extract PC scores & extract and view the principal components
+
+```{r z}
+biplot(pca_result, scale = 0)
+str(pca_result)
+pca_result$x
+```
+Take PC scores of PCI and PC2 and attached to iris data
+
+```{r i}
+iris2 <- cbind (iris,pca_result$x [, 1:2])
+head(iris2)
+str (iris2)
+```
+Plot with ggplot
+
+```{r j}
+ggplot(iris2, aes(PC1, PC2, col = Species, fill = Species)) + 
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) + 
+  geom_point(shape = 21, col = "black") 
+```
+
+ Correlations between variables and Principal Component Scores
+```{r k}
+cor (iris[, -5])
+
+cor (iris[, -5], iris2 [, 6:7] )
+
+```
+
+session information
+```{r l}
+sessionInfo()
+```
